@@ -5,7 +5,7 @@ library(ggplot2)
 library(reshape2)
 
 getwd()
-# setwd("code/HelloJustJoe/googleCapstoneProject")
+#setwd("code/HelloJustJoe/googleCapstoneProject")
 # getwd()
 
 
@@ -45,7 +45,7 @@ cleaned_datasets <- lapply(list_of_datasets, function(df) {
   df <- na.omit(df)
   #remove duplicates
   df <- distinct(df)
-
+  
   
   #example for handling datasets with a known date column 'ActivityDay'
   if("ActivityDay" %in% names(df)) {
