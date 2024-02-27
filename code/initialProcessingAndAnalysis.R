@@ -145,7 +145,7 @@ processed_datasets <- lapply(cleaned_datasets, remove_outliers)
 #keep the same names for processed datasets
 names(processed_datasets) <- names(cleaned_datasets)
 
-# Example usage to check the result on one of the processed datasets
+#check the result on one of the processed datasets
 head(processed_datasets$`Daily Activity`)
 
 
