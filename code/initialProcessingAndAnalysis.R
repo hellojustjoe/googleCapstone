@@ -3,6 +3,9 @@ library(dplyr)
 library(lubridate)
 library(ggplot2)
 library(reshape2)
+library(plotly)
+library(corrplot)
+library(GGally)
 
 getwd()
 #setwd("code/HelloJustJoe/googleCapstoneProject")
@@ -77,44 +80,6 @@ names(cleaned_datasets) <- c("Daily Activity", "Daily Calories", "Daily Intensit
                              "Weight Log Info")
 
 
-#vizualize outliers and data before further processing
-
-generate_boxplots <- function(dataset_name) {
-  if(!dataset_name %in% names(cleaned_datasets)) {
-    stop("Dataset name does not exist in the list. Please check the name and try again.")
-  }
-  
-  df <- cleaned_datasets[[dataset_name]]
-  num_cols <- sapply(df, is.numeric) & names(df) != "Id"
-  melted_data <- melt(df[, num_cols], variable.name = "Variable", value.name = "Value")
-  
-  p <- ggplot(melted_data, aes(x = Variable, y = Value)) +
-    geom_boxplot() +
-    labs(title = paste("Box Plot for", dataset_name), x = "Variable", y = "Value") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  
-  print(p)
-}
-
-
-generate_histograms <- function(cleaned_datasets, variable_name) {
-  #histograms, takes the entire cleaned datasets collection and searches for a variable
-  for(i in seq_along(cleaned_datasets)) {
-    df <- cleaned_datasets[[i]]
-    if(variable_name %in% names(df)) {
-      p <- ggplot(df, aes_string(x = variable_name)) + 
-        geom_histogram(binwidth = 1000, fill = "blue", color = "black") +
-        labs(title = paste("Histogram of ", variable_name, " in Dataset", i), x = variable_name, y = "Frequency") +
-        theme_minimal()
-      print(p)
-    }
-  }
-}
-
-
-
-
 #processing
 
 ##handling outliers
@@ -149,14 +114,43 @@ names(processed_datasets) <- names(cleaned_datasets)
 head(processed_datasets$`Daily Activity`)
 
 
-##merging
-
-
 #visualizing
 
 ##heatmaps
+correlation_matrix <- cor(processed_datasets$`Daily Activity`[, sapply(processed_datasets$`Daily Activity`, is.numeric)])
+
+corrplot(correlation_matrix, method = "color", type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45, addCoef.col = "black")
 
 ##linecharts
+ggplot(processed_datasets$`Daily Activity`, aes(x = ActivityDay, y = TotalSteps)) +
+  geom_line() +
+  labs(title = "Daily Steps Over Time", x = "Day", y = "Total Steps") +
+  theme_minimal()
 
-##more graphs
+##histograms
+ggplot(processed_datasets$`Daily Activity`, aes(x = TotalSteps)) +
+  geom_histogram(bins = 30, fill = "blue", color = "black") +
+  labs(title = "Distribution of Total Steps", x = "Total Steps", y = "Frequency") +
+  theme_minimal()
+
+##scatter
+ggplot(processed_datasets$`Daily Activity`, aes(x = TotalSteps, y = Calories)) +
+  geom_point() +
+  labs(title = "Total Steps vs. Calories", x = "Total Steps", y = "Calories") +
+  theme_minimal()
+
+##box
+ggplot(processed_datasets$`Daily Activity`, aes(y = TotalSteps)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Total Steps", y = "Total Steps") +
+  theme_minimal()
+
+
+
+##merging
+
+
+
+
 
